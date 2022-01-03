@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import classNames from "../utils/class-names";
-import { minutesToDuration, secondsToDuration } from "../utils/duration";
 import useInterval from "../utils/useInterval";
-
+import DurationBtns from "./DurationBtns";
+import PausePlayBtns from "./PausePlayBtns";
+import SessionDisplay from "./SessionDisplay";
 // These functions are defined outside of the component to ensure they do not have access to state
 // and are, therefore, more likely to be pure.
 
@@ -50,7 +50,6 @@ function nextSession(focusDuration, breakDuration) {
 
 function Pomodoro() {
   // Timer starts out paused
-
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   // The current session - null where there is no session running
   const [session, setSession] = useState(null);
@@ -126,174 +125,32 @@ function Pomodoro() {
     setBreakDuration(5);
   };
 
-  const calculatePercentage = (num1, num2) => {
-    return 1 - num1 / (num2 * 60);
-  };
-
-  const DurationBtns = ({ session, handleDuration }) => {
-    return (
-      <div className="row">
-        <div className="col">
-          <div className="input-group input-group-lg mb-2">
-            <span className="input-group-text" data-testid="duration-focus">
-              Focus Duration: {minutesToDuration(focusDuration)}
-            </span>
-            <div className="input-group-append">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-testid="decrease-focus"
-                disabled={session}
-                onClick={handleDuration}
-              >
-                <span className="oi oi-minus" />
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-testid="increase-focus"
-                disabled={session}
-                onClick={handleDuration}
-              >
-                <span className="oi oi-plus" />
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="float-right">
-            <div className="input-group input-group-lg mb-2">
-              <span className="input-group-text" data-testid="duration-break">
-                Break Duration: {minutesToDuration(breakDuration)}
-              </span>
-              <div className="input-group-append">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-testid="decrease-break"
-                  disabled={session}
-                  onClick={handleDuration}
-                >
-                  <span className="oi oi-minus" />
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-testid="increase-break"
-                  disabled={session}
-                  onClick={handleDuration}
-                >
-                  <span className="oi oi-plus" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const PausePlayBtns = () => {
-    return (
-      <div className="row">
-        <div className="col">
-          <div
-            className="btn-group btn-group-lg mb-2"
-            role="group"
-            aria-label="Timer controls"
-          >
-            <button
-              type="button"
-              className="btn btn-primary"
-              data-testid="play-pause"
-              title="Start or pause timer"
-              onClick={playPause}
-            >
-              <span
-                className={classNames({
-                  oi: true,
-                  "oi-media-play": !isTimerRunning,
-                  "oi-media-pause": isTimerRunning,
-                })}
-              />
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              data-testid="stop"
-              title="Stop the session"
-              disabled={!session}
-              onClick={handleStop}
-            >
-              <span className="oi oi-media-stop" />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const SessionDisplay = () => {
-    return (
-      session && (
-        <>
-          <div>
-            <div className="row mb-2">
-              <div className="col">
-                <h2 data-testid="session-title">
-                  {session?.label} for{" "}
-                  {session?.label === "Focusing"
-                    ? minutesToDuration(focusDuration)
-                    : minutesToDuration(breakDuration)}{" "}
-                  minutes
-                </h2>
-
-                <p className="lead" data-testid="session-sub-title">
-                  {secondsToDuration(session?.timeRemaining)} remaining
-                </p>
-                <h4>{session && !isTimerRunning ? "Paused" : ""}</h4>
-              </div>
-            </div>
-            <div className="row mb-2">
-              <div className="col">
-                <div className="progress" style={{ height: "20px" }}>
-                  <div
-                    className="progress-bar"
-                    role="progressbar"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    aria-valuenow={
-                      calculatePercentage(
-                        session.timeRemaining,
-                        session.label === "Focusing"
-                          ? focusDuration
-                          : breakDuration
-                      ) * 100
-                    }
-                    style={{
-                      width:
-                        calculatePercentage(
-                          session.timeRemaining,
-                          session.timeRemaining === "Focusing"
-                            ? focusDuration
-                            : breakDuration
-                        ) + "%",
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )
-    );
-  };
-
   return (
     <div className="pomodoro">
-      <DurationBtns session={session} handleDuration={handleDuration} />
-      <PausePlayBtns />
-      <SessionDisplay />
+      <div className="row">
+        <DurationBtns
+          handleDuration={handleDuration}
+          focusDuration={focusDuration}
+          breakDuration={breakDuration}
+          session={session}
+        />
+      </div>
+      <div className="row">
+        <PausePlayBtns
+          isTimerRunning={isTimerRunning}
+          playPause={playPause}
+          handleStop={handleStop}
+          session={session}
+        />
+      </div>
+      <div>
+        <SessionDisplay
+          session={session}
+          focusDuration={focusDuration}
+          breakDuration={breakDuration}
+          isTimerRunning={isTimerRunning}
+        />
+      </div>
     </div>
   );
 }
