@@ -235,55 +235,57 @@ function Pomodoro() {
 
   const SessionDisplay = () => {
     return (
-      <>
-        <div>
-          <div className="row mb-2">
-            <div className="col">
-              <h2 data-testid="session-title">
-                {session?.label} for{" "}
-                {session?.label === "Focusing"
-                  ? minutesToDuration(focusDuration)
-                  : minutesToDuration(breakDuration)}{" "}
-                minutes
-              </h2>
+      session && (
+        <>
+          <div>
+            <div className="row mb-2">
+              <div className="col">
+                <h2 data-testid="session-title">
+                  {session?.label} for{" "}
+                  {session?.label === "Focusing"
+                    ? minutesToDuration(focusDuration)
+                    : minutesToDuration(breakDuration)}{" "}
+                  minutes
+                </h2>
 
-              <p className="lead" data-testid="session-sub-title">
-                {secondsToDuration(session?.timeRemaining)} remaining
-              </p>
-              <h4>{session && !isTimerRunning ? "Paused" : ""}</h4>
+                <p className="lead" data-testid="session-sub-title">
+                  {secondsToDuration(session?.timeRemaining)} remaining
+                </p>
+                <h4>{session && !isTimerRunning ? "Paused" : ""}</h4>
+              </div>
             </div>
-          </div>
-          <div className="row mb-2">
-            <div className="col">
-              <div className="progress" style={{ height: "20px" }}>
-                <div
-                  className="progress-bar"
-                  role="progressbar"
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                  aria-valuenow={
-                    calculatePercentage(
-                      session.timeRemaining,
-                      session.label === "Focusing"
-                        ? focusDuration
-                        : breakDuration
-                    ) * 100
-                  }
-                  style={{
-                    width:
+            <div className="row mb-2">
+              <div className="col">
+                <div className="progress" style={{ height: "20px" }}>
+                  <div
+                    className="progress-bar"
+                    role="progressbar"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow={
                       calculatePercentage(
                         session.timeRemaining,
-                        session.timeRemaining === "Focusing"
+                        session.label === "Focusing"
                           ? focusDuration
                           : breakDuration
-                      ) + "%",
-                  }}
-                />
+                      ) * 100
+                    }
+                    style={{
+                      width:
+                        calculatePercentage(
+                          session.timeRemaining,
+                          session.timeRemaining === "Focusing"
+                            ? focusDuration
+                            : breakDuration
+                        ) + "%",
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </>
+        </>
+      )
     );
   };
 
@@ -291,7 +293,7 @@ function Pomodoro() {
     <div className="pomodoro">
       <DurationBtns session={session} handleDuration={handleDuration} />
       <PausePlayBtns />
-      {session ? <SessionDisplay /> : ""}
+      <SessionDisplay />
     </div>
   );
 }
