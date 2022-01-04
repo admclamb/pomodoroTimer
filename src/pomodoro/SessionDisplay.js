@@ -31,7 +31,7 @@ const IsPaused = ({ session, isTimerRunning }) => {
 
 const ProgressBar = ({ session, focusDuration, breakDuration }) => {
   const calculatePercentage = (num1, num2) => {
-    return 1 - num1 / (num2 * 60);
+    return (1 - num1 / (num2 * 60)) * 100;
   };
   console.log(calculatePercentage(session.timeRemaining, focusDuration) + "%");
   if (session.label === "Focusing") {
@@ -60,9 +60,10 @@ const ProgressBar = ({ session, focusDuration, breakDuration }) => {
           role="progressbar"
           aria-valuemin="0"
           aria-valuemax="100"
-          aria-valuenow={
-            calculatePercentage(session.timeRemaining, breakDuration) * 100
-          }
+          aria-valuenow={calculatePercentage(
+            session.timeRemaining,
+            breakDuration
+          )}
           style={{
             width:
               calculatePercentage(session.timeRemaining, breakDuration) + "%",
